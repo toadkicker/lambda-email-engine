@@ -43,15 +43,15 @@ exports.handler = function (event, context) {
 
 function snsPublish (msg) {
   var params = {
-    Message: snsMessage.compiledTemplate, /* required */
+    Message: msg.compiledTemplate, /* required */
     MessageAttributes: {
       msg: {
         DataType: 'String ' /* required */
       },
     },
     MessageStructure: 'email',
-    Subject: snsMessage.subject,
-    TopicArn: snsMessage.recipient
+    Subject: msg.subject,
+    TopicArn: msg.recipient
   };
   sns.publish(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred
