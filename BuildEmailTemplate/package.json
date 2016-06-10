@@ -1,0 +1,36 @@
+{
+  "name": "build-email-template",
+  "version": "1.0.1",
+  "description": "A Lambda that creates email templates from HTML in an S3 bucket",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp-aws-lambda": "^1.0.11",
+    "markup-js": ""
+  },
+  "devDependencies": {
+    "aws-lambda-gulp-tasks": "^1.0.1",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-zip": "^3.2.0",
+    "node-aws-lambda": "^0.1.8",
+    "run-sequence": "^1.1.5"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/intensity_sd/build-email-template.git"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "ses",
+    "sns",
+    "email",
+    "template"
+  ],
+  "author": "Todd Baur",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/intensity_sd/buikd-email-template#readme"
+}

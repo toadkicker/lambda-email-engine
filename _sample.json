@@ -1,0 +1,7 @@
+{
+  "templateBucket": "com.intensity.forecasts.emails",
+  "templateKey": "Templates/Template.html",
+  "targetAddress": "todd.baur@intensity.com",
+  "fromAddress": "Forecasts by Intensity <support@forecasts.intensity.com>",
+  "subject": "Email From {{name}}"
+}
