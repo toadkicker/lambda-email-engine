@@ -1,7 +1,10 @@
 {
-  "templateBucket": "com.intensity.forecasts.emails",
-  "templateKey": "Templates/Template.html",
-  "targetAddress": "todd.baur@intensity.com",
-  "fromAddress": "Forecasts by Intensity <support@forecasts.intensity.com>",
-  "subject": "Email From {{name}}"
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "Sns": {
+        "Message": "{\"recipient\":\"billy.bacon+intensity@gmail.com\",\"subject\":\"user change password request\",\"templateParams\":{\"subject\":\"Password Change Request\",\"fromName\":\"Intensity Forecasts Password Support\",\"message\":\"<div><p>You have submitted a request to change your password.  Please confirm your request and proceed by clicking the following link: </p> </div> <a href=http://forecasts-dev.intensity.internal/#/changePassword?t=797f448f-381d-47b0-9b05-05dc19b66e86&e=billy.bacon+intensity@gmail.com>Confirm And Proceed</a> <p> If it wasnt you please disregard this email and make sure you can still login to your account. </p>\",\"templateKey\":\"Templates/template.html\",\"fromAddress\":\"noreply@support.intensity.com\"}}"
+      }
+    }
+  ]
 }

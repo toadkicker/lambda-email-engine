@@ -101,7 +101,7 @@ function buildTemplate(event, context) {
         // Perform the substitutions
         var mark = require('markup-js');
 
-        var subject = mark.up(config.templateParams.subject, event);
+        var subject = mark.up(event.templateParams.subject, event);
         console.log("Final subject: " + subject);
 
         var message = mark.up(templateBody, event);
@@ -126,24 +126,24 @@ function sendSesEmail (event, context) {
         Charset: 'UTF-8'
       }
     },
-    Source: event.fromAddress,
+    Source: event.templateParams.fromAddress,
     ReplyToAddresses: [
       event.replyToAddress
     ]
   };
 
-  var fileExtension = event.templateKey.split(".").pop();
+  var fileExtension = event.templateParams.templateKey.split(".").pop();
   if (fileExtension.toLowerCase() == 'html') {
     params.Message.Body = {
       Html: {
-        Data: event.message,
+        Data: event.templateParams.message,
         Charset: 'UTF-8'
       }
     };
   } else if (fileExtension.toLowerCase() == 'txt') {
     params.Message.Body = {
       Text: {
-        Data: event.message,
+        Data: event.templateParams.message,
         Charset: 'UTF-8'
       }
     };
