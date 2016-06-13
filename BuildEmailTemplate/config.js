@@ -4,8 +4,9 @@ var config = {
   "templateBucket" : "com.intensity.forecasts.emails",
   "templateKey" : "Templates/template.html",
   "targetAddress" : "todd.baur@intensity.com",
-  "fromAddress": "Forecasts by Intensity <support@forecasts.intensity.com>",
-  "defaultSubject" : "Email From {{name}}"
+  "replyToAddress": "noreply@support.intensity.com",
+  "fromAddress": "Forecasts by Intensity <noreply@support.intensity.com>",
+  "subject" : "Intensity"
 }
 
 module.exports = config
