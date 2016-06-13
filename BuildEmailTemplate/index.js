@@ -3,20 +3,22 @@
  */
 var aws = require('aws-sdk');
 var config = require('./config.js') || {};
+var _ = require('underscore');
 
 exports.handler = function (event, context) {
+  defaults = _.extend(event, config);
 
   process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT'];
   //Check event source is SNS
-  if (event.hasOwnProperty('Records')) {
-    if(event.Records.length > 50) {
+  if (defaults.hasOwnProperty('Records')) {
+    if(defaults.Records.length > 50) {
       console.log("SES max limit is 50 per request. This request is canceled.");
       return;
     }
-    for (var i = event.Records.length - 1; i >= 0; i--) {
-      switch(event.Records[i].EventSource) {
+    for (var i = defaults.Records.length - 1; i >= 0; i--) {
+      switch(defaults.Records[i].EventSource) {
         case "aws:sns":
-          snsMessage = JSON.parse(event.Records[i].Sns.Message);
+          snsMessage = JSON.parse(defaults.Records[i].Sns.Message);
           snsMessage.compiledTemplate = buildTemplate(snsMessage.templateParams, context);
           //we want to publish to another topic
           if(snsMessage.recipient.match(/^arn/)) {
@@ -29,19 +31,17 @@ exports.handler = function (event, context) {
           break;
         case "aws:sqs":
           if(config.hasOwnProperty('sqs') && config.sqs.hasOwnProperty('queueUrl')){
-            context.succeed(sqsGetMessages());
+            context.succeed(sqsGetMessages(defaults, context));
           } else {
             console.log("Please set sqs.queueUrl to use this feature.")
           }
           break;
         default:
-          context.fail("Invalid event source used. Please use SNS or SQS to invoke this function.");
+          context.fail("Invalid event source used. Please use a valid email address, SNS ARN topic, or SQS queueUrl to invoke this function.");
       }
     }
   } else {
-    config.templateParams = event;
-    config.templateParams.subject = "Intensity";
-    buildTemplate(event, context);
+    buildTemplate(defaults, context);
   }
 }
 
@@ -64,7 +64,7 @@ function snsPublish (msg) {
   });
 }
 
-function sqsGetMessages () {
+function sqsGetMessages (event, context) {
   var sqs = new aws.SQS();
   var params = {
     QueueUrl: config.sqs.queueUrl, /* required */
@@ -77,7 +77,7 @@ function sqsGetMessages () {
   };
   sqs.receiveMessage(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred
-    else     console.log(data);           // successful response
+    else     buildTemplate(event, context);           // successful response
   });
 }
 
@@ -113,7 +113,7 @@ function buildTemplate(event, context) {
 
 function sendSesEmail (event, context) {
   "use strict";
-  var ses = new aws.SES();
+  var ses = new aws.SES({region: 'us-west-2'});
   var params = {
     Destination: {
       ToAddresses: [
