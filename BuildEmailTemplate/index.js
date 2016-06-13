@@ -2,13 +2,10 @@
  * Created by toadkicker on 6/9/16.
  */
 var aws = require('aws-sdk');
-var s3 = new aws.S3();
-var sns = new aws.SNS();
-var sqs = new aws.SQS();
 var config = require('./config.js') || {};
 
 exports.handler = function (event, context) {
-  var templateParams = "";
+
   process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT'];
   //Check event source is SNS
   if (event.hasOwnProperty('Records')) {
@@ -21,7 +18,14 @@ exports.handler = function (event, context) {
         case "aws:sns":
           snsMessage = JSON.parse(event.Records[i].Sns.Message);
           snsMessage.compiledTemplate = buildTemplate(snsMessage.templateParams, context);
-          context.succeed(snsPublish(snsMessage));
+          //we want to publish to another topic
+          if(snsMessage.recipient.match(/^arn/)) {
+            context.succeed(snsPublish(snsMessage));
+          }
+          //we want to publish to SES
+          if(snsMessage.recipient.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+            sendSesEmail(snsMessage, context);
+          }
           break;
         case "aws:sqs":
           if(config.hasOwnProperty('sqs') && config.sqs.hasOwnProperty('queueUrl')){
@@ -35,13 +39,14 @@ exports.handler = function (event, context) {
       }
     }
   } else {
-    config.templateParams = {};
+    config.templateParams = event;
     config.templateParams.subject = "Intensity";
     buildTemplate(event, context);
   }
 }
 
 function snsPublish (msg) {
+  var sns = new aws.SNS();
   var params = {
     Message: msg.compiledTemplate, /* required */
     MessageAttributes: {
@@ -60,6 +65,7 @@ function snsPublish (msg) {
 }
 
 function sqsGetMessages () {
+  var sqs = new aws.SQS();
   var params = {
     QueueUrl: config.sqs.queueUrl, /* required */
     MaxNumberOfMessages: 10,
@@ -77,6 +83,8 @@ function sqsGetMessages () {
 
 function buildTemplate(event, context) {
   "use strict";
+  var s3 = new aws.S3();
+
   s3.getObject({
       Bucket: config.templateBucket,
       Key: config.templateKey
@@ -101,4 +109,57 @@ function buildTemplate(event, context) {
         return message;
       }
     })
+}
+
+function sendSesEmail (event, context) {
+  "use strict";
+  var ses = new aws.SES();
+  var params = {
+    Destination: {
+      ToAddresses: [
+        event.recipient
+      ]
+    },
+    Message: {
+      Subject: {
+        Data: event.subject,
+        Charset: 'UTF-8'
+      }
+    },
+    Source: event.fromAddress,
+    ReplyToAddresses: [
+      event.replyToAddress
+    ]
+  };
+
+  var fileExtension = event.templateKey.split(".").pop();
+  if (fileExtension.toLowerCase() == 'html') {
+    params.Message.Body = {
+      Html: {
+        Data: event.message,
+        Charset: 'UTF-8'
+      }
+    };
+  } else if (fileExtension.toLowerCase() == 'txt') {
+    params.Message.Body = {
+      Text: {
+        Data: event.message,
+        Charset: 'UTF-8'
+      }
+    };
+  } else {
+    context.fail('Internal Error: Unrecognized template file extension: ' + fileExtension);
+    return;
+  }
+
+  // Send the email
+  ses.sendEmail(params, function (err, data) {
+    if (err) {
+      console.log(err, err.stack);
+      context.fail('Internal Error: The email could not be sent.' + err);
+    } else {
+      console.log(data);           // successful response
+      context.succeed('The email was successfully sent to ' + event.recipent);
+    }
+  });
 }
