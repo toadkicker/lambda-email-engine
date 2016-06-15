@@ -14,7 +14,7 @@ module.exports = function (event, context) {
     emailRequest.on('complete', function (response) {
       console.log('sent: ', response);
     });
-    emailRequest.send();
+    // emailRequest.send();
   });
   s3request.send();
 }
