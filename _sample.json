@@ -1,9 +1,11 @@
 {
   "recipient" : "todd.baur@intensity.com",
-  "subject" : "new user registration marketing update",
+  "subject" : "user change password request",
   "templateParams" : {
-    "message" : "<div><p>New User Information</p><hr> <p>Email: billy.bacon+intensity3@gmail.com<br>First Name: billy<br>Last Name: bacon<br>Phone: 555-555-5555<br>Company: dillon software<br></p></div><div><a href=\"http://intensity-admin-dev.intensity.internal\">Click here to go to the Intensity Admin App</a></div><br><br>",
-    "templateKey" : "Templates/template.html",
-    "fromAddress" : "noreply@support.intensity.com"
+    "subject" : "Password Change Request",
+    "fromName" : "Intensity Forecasts Password Support",
+    "fromAddress" : "noreply@support.intensity.com",
+    "message" : "<div><p>You have submitted a request to change your password.  Please confirm your request and proceed by clicking the following link: </p> </div> <a href=http://forecasts-dev.intensity.internal/#/changePassword?t=129bd5ab-2968-4365-bf89-f01dc2a90ade&e=billy.bacon+intensity@gmail.com>Confirm And Proceed</a> <p> If it wasnt you please disregard this email and make sure you can still login to your account. </p>",
+    "templateKey" : "Templates/testChangePassword.html"
   }
 }

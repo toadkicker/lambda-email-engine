@@ -14,9 +14,10 @@ exports.handler = function (event, context) {
   if (event.hasOwnProperty('Records')) {
 
     for (var i = event.Records.length - 1; i >= 0; i--) {
-      switch (defaults.Records[i].EventSource) {
+      switch (event.Records[i].EventSource) {
         case "aws:sns":
-          snsMessage = _.extend(config, JSON.parse(event.Records[i].Sns.Message));
+          var snsMessageParse = JSON.parse(event.Records[i].Sns.Message);
+          var snsMessage = _.extend(defaults, snsMessageParse);
           //we want to publish to another topic
           if (snsMessage.recipient.match(/^arn/)) {
             var s3Templates = require('./s3GetObject');
