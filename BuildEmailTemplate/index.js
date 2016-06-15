@@ -7,7 +7,7 @@ var _ = require('underscore');
 var email = require('./email');
 
 exports.handler = function (event, context) {
-  var defaults = _.extend(event, config);
+  var defaults = _.extend(config, event);
 
   process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT'];
   //Check event source is SNS
@@ -71,37 +71,4 @@ exports.handler = function (event, context) {
     var engine = require('./engine');
     engine(defaults, context);
   }
-}
-
-function buildTemplate (event, context) {
-  "use strict";
-  var s3 = new aws.S3();
-  if (!event.hasOwnProperty('templateParams') && !event.templateParams.hasOwnProperty('templateKey')) {
-    context.fail('No templateParams.templateKey defined')
-  }
-
-  return s3.getObject({
-    Bucket: config.templateBucket,
-    Key: event.templateParams.templateKey
-  }).on('success',
-    function (err, data) {
-      if (err) {
-        // Error
-        console.log(err, err.stack);
-        context.fail('Internal Error: Failed to load template from s3.')
-      } else {
-        var templateBody = data.Body.toString();
-        console.log("Template Body: " + templateBody);
-
-        // Perform the substitutions
-        var mark = require('markup-js');
-
-        var subject = mark.up(event.templateParams.subject, event);
-        console.log("Final subject: " + subject);
-
-        var message = mark.up(templateBody, event);
-        console.log("Final message: " + message);
-        return message;
-      }
-    })
 }
