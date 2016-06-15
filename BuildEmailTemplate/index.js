@@ -62,12 +62,21 @@ exports.handler = function (event, context) {
   } else {
     var s3Templates = require('./s3GetObject');
     var compileTemplate = require('./template');
+    var s3request = s3Templates.getTemplate(defaults);
 
-    s3Templates.getTemplate(defaults, context).on('success', function () {
+    s3request.on('error', function (err) {
+      context.fail(err);
+    });
+    s3request.on('complete', function (response) {
       "use strict";
-      defaults.compiledTemplate = compileTemplate.compile(defaults, context);
-      email.send(defaults, context);
-    })
+      defaults.compiledTemplate = compileTemplate.compile(defaults, response.data.Body.toString());
+      var emailRequest = email.send(defaults, context);
+      emailRequest.on('complete', function (response) {
+        console.log('sent: ', response);
+      });
+      emailRequest.send();
+    });
+    s3request.send();
   }
 }
 
@@ -80,7 +89,13 @@ function snsParse (response) {
   "use strict";
   var emailSenders = [];
   var smsSenders = [];
-  var topicSubscribers = response.data.Subscriptions;
+  console.log("snsParse response: ", response);
+  var topicSubscribers = {};
+  if(response.data.hasOwnProperty("Subscriptions")) {
+    topicSubscribers = response.data.Subscriptions;
+  } else {
+    console.log("Unable to list the subscribers in your topic. Check permissions in IAM or verify the topic contains subscribers of email or sms type.");
+  }
   for (var i = topicSubscribers.length - 1; i >= 0; i--) {
     switch (topicSubscribers[i].Protocol) {
       case "email":

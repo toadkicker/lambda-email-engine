@@ -1,6 +1,9 @@
 var aws = require("aws-sdk");
 exports.send = function (event, context) {
   "use strict";
+  if(event.hasOwnProperty('recipient') &&
+    event.hasOwnProperty('subject')
+  )
   var ses = new aws.SES({region: 'us-west-2'});
   var params = {
     Destination: {
@@ -21,14 +24,14 @@ exports.send = function (event, context) {
   };
 
   var fileExtension = event.templateParams.templateKey.split(".").pop();
-  if (fileExtension.toLowerCase() == 'html') {
+  if (fileExtension.toLowerCase() == 'html') { //email template support
     params.Message.Body = {
       Html: {
-        Data: event.templateParams.message,
+        Data: event.compiledTemplate,
         Charset: 'UTF-8'
       }
     };
-  } else if (fileExtension.toLowerCase() == 'txt') {
+  } else if (fileExtension.toLowerCase() == 'txt') { //sms support
     params.Message.Body = {
       Text: {
         Data: event.templateParams.message,

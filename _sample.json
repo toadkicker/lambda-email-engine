@@ -1,7 +1,9 @@
 {
-  "templateBucket": "com.intensity.forecasts.emails",
-  "templateKey": "Templates/Template.html",
-  "targetAddress": "todd.baur@intensity.com",
-  "fromAddress": "Forecasts by Intensity <noreply@support.intensity.com>",
-  "subject": "Email From Test"
+  "recipient" : "todd.baur@intensity.com",
+  "subject" : "new user registration marketing update",
+  "templateParams" : {
+    "message" : "<div><p>New User Information</p><hr> <p>Email: billy.bacon+intensity3@gmail.com<br>First Name: billy<br>Last Name: bacon<br>Phone: 555-555-5555<br>Company: dillon software<br></p></div><div><a href=\"http://intensity-admin-dev.intensity.internal\">Click here to go to the Intensity Admin App</a></div><br><br>",
+    "templateKey" : "Templates/template.html",
+    "fromAddress" : "noreply@support.intensity.com"
+  }
 }
