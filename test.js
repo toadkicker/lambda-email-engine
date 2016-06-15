@@ -17,7 +17,6 @@ var app = require('./BuildEmailTemplate/index');
 
 // Load the sample event to be passed to Lambda. The _sampleEvent.json file can be modified to match
 // what you want Lambda to process on.
-var event = JSON.parse(fs.readFileSync('./_sample.json', 'utf8').trim());
 
 var context = {};
 context.done = function () {
@@ -30,4 +29,24 @@ context.fail = function (msg) {
   console.log("Lambda function failed: " + msg);
 }
 
-app.handler(event, context);
+function singleEmail () {
+  "use strict";
+  var event = JSON.parse(fs.readFileSync('./_sample.json', 'utf8').trim());
+  app.handler(event, context);
+}
+
+function bySnsTopicList () {
+  "use strict";
+  var event = JSON.parse(fs.readFileSync('./_sns_sample.json', 'utf8').trim());
+  app.handler(event, context);
+}
+
+function bySqsQueue () {
+  "use strict";
+  var event = JSON.parse(fs.readFileSync('./_sns_sample.json', 'utf8').trim());
+  app.handler(event, context);
+}
+
+// singleEmail();
+bySnsTopicList();
+// bySqsQueue();

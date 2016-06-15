@@ -4,9 +4,13 @@
   "description": "A Lambda that creates email templates from HTML in an S3 bucket",
   "main": "gulpfile.js",
   "dependencies": {
-    "gulp-aws-lambda": "^1.0.11"
+    "aws-sdk": "latest",
+    "markup-js": "^1.5.21",
+    "node-aws-lambda": "^0.1.8",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "gulp-aws-lambda": "^1.0.11",
     "aws-lambda-gulp-tasks": "^1.0.1",
     "del": "^2.2.0",
     "gulp": "^3.9.1",

@@ -5,11 +5,11 @@ var install = require('gulp-install');
 var runSequence = require('run-sequence');
 var awsLambda = require("node-aws-lambda");
 
-var dist = 'build';
-var src = 'BuildEmailTemplate';
+var dist = './build';
+var src = './BuildEmailTemplate';
 
 gulp.task('clean', function() {
-  return del(['./'+dist+'.zip']);
+  return del(['./'+dist+"/**",'./'+dist+'.zip']);
 });
 
 gulp.task('js', function() {
@@ -18,7 +18,7 @@ gulp.task('js', function() {
 });
 
 gulp.task('node-mods', function() {
-  return gulp.src('./package.json')
+  return gulp.src(src + '/package.json')
     .pipe(gulp.dest(dist+'/'))
     .pipe(install({production: true}));
 });
@@ -30,7 +30,7 @@ gulp.task('zip', function() {
 });
 
 gulp.task('upload', function(callback) {
-  awsLambda.deploy('./'+dist+'.zip', require("./lambda-config.js"), callback);
+  awsLambda.deploy(dist+'.zip', require("./lambda-config.js"), callback);
 });
 
 gulp.task('deploy', function(callback) {

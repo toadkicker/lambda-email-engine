@@ -14,5 +14,6 @@ module.exports = {
   timeout: 100,
   memorySize: 128,
   version: version,
-  description: desc
+  description: desc,
+  alias: version
 }
