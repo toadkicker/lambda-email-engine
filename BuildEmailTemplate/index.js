@@ -27,8 +27,10 @@ exports.handler = function (event, context) {
             });
             s3request.on('complete', function (response) {
               snsMessage.compiledTemplate = template.compile(snsMessage, response.data.Body.toString(), context);
+              var listSubscriptionsByTopic = require("./listSubscriptionsByTopic");
               var getSNSSubscribers = listSubscriptionsByTopic(snsMessage, context);
               getSNSSubscribers.on('complete', function (snsResponse) {
+                var snsParse = require('./snsParse');
                 var snsSubscribers = snsParse(snsResponse);
                 snsSubscribers.email.forEach(function (emailer) {
                   snsMessage.recipient = emailer.Endpoint;
@@ -45,11 +47,17 @@ exports.handler = function (event, context) {
           }
           //we want to publish to SES
           if (snsMessage.recipient.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
-            sendSesEmail(snsMessage, context);
+            var engine = require('./engine');
+            engine(snsMessage, context);
           }
           break;
         case "aws:sqs":
           if (config.hasOwnProperty('sqs') && config.sqs.hasOwnProperty('queueUrl')) {
+            var sqsGetMessages = require('./sqsGetMessages');
+            sqsGetMessages.on('complete', function (response) {
+              console.log(response);
+            })
+            sqsGetMessages.send();
             context.succeed(sqsGetMessages(defaults, context));
           } else {
             context.fail("Please set sqs.queueUrl to use this feature.");
@@ -60,96 +68,9 @@ exports.handler = function (event, context) {
       }
     }
   } else {
-    var s3Templates = require('./s3GetObject');
-    var compileTemplate = require('./template');
-    var s3request = s3Templates.getTemplate(defaults);
-
-    s3request.on('error', function (err) {
-      context.fail(err);
-    });
-    s3request.on('complete', function (response) {
-      "use strict";
-      defaults.compiledTemplate = compileTemplate.compile(defaults, response.data.Body.toString());
-      var emailRequest = email.send(defaults, context);
-      emailRequest.on('complete', function (response) {
-        console.log('sent: ', response);
-      });
-      emailRequest.send();
-    });
-    s3request.send();
+    var engine = require('./engine');
+    engine(defaults, context);
   }
-}
-
-function listSubscriptionsByTopic (msg) {
-  var sns = new aws.SNS();
-  return sns.listSubscriptionsByTopic({TopicArn: msg.recipient})
-};
-
-function snsParse (response) {
-  "use strict";
-  var emailSenders = [];
-  var smsSenders = [];
-  console.log("snsParse response: ", response);
-  var topicSubscribers = {};
-  if(response.data.hasOwnProperty("Subscriptions")) {
-    topicSubscribers = response.data.Subscriptions;
-  } else {
-    console.log("Unable to list the subscribers in your topic. Check permissions in IAM or verify the topic contains subscribers of email or sms type.");
-  }
-  for (var i = topicSubscribers.length - 1; i >= 0; i--) {
-    switch (topicSubscribers[i].Protocol) {
-      case "email":
-        emailSenders.push(topicSubscribers[i])
-        break;
-      case "sms":
-        smsSenders.push(topicSubscribers[i]);
-        break;
-      default:
-        snsPublish(msg, context);
-    }
-  }
-  return {
-    email: emailSenders,
-    sms: smsSenders
-  }
-}
-
-function snsPublish (msg, context) {
-  var sns = new aws.SNS();
-
-  var params = {
-    Message: msg.compiledTemplate, /* required */
-    MessageAttributes: {
-      msg: {
-        StringValue: msg.compiledTemplate,
-        DataType: 'String' /* required */
-      },
-    },
-    MessageStructure: 'email',
-    Subject: msg.subject,
-    TopicArn: msg.recipient
-  };
-  sns.publish(params, function (err, data) {
-    if (err) context.fail(err, err.stack); // an error occurred
-    else     context.succeed(data);           // successful response
-  });
-}
-
-function sqsGetMessages (event, context) {
-  var sqs = new aws.SQS();
-  var params = {
-    QueueUrl: config.sqs.queueUrl, /* required */
-    MaxNumberOfMessages: 10,
-    MessageAttributeNames: [
-      'All'
-    ],
-    VisibilityTimeout: 0,
-    WaitTimeSeconds: 0
-  };
-  sqs.receiveMessage(params, function (err, data) {
-    if (err) console.log(err, err.stack); // an error occurred
-    else     buildTemplate(event, context);           // successful response
-  });
 }
 
 function buildTemplate (event, context) {

@@ -40,6 +40,11 @@ function bySnsTopicList () {
   var event = JSON.parse(fs.readFileSync('./_sns_sample.json', 'utf8').trim());
   app.handler(event, context);
 }
+function bySnsWithEmailRecipient () {
+  "use strict";
+  var event = JSON.parse(fs.readFileSync('./_sns_sample_email_recipient.json', 'utf8').trim());
+  app.handler(event, context);
+}
 
 function bySqsQueue () {
   "use strict";
@@ -47,6 +52,7 @@ function bySqsQueue () {
   app.handler(event, context);
 }
 
-singleEmail();
-bySnsTopicList();
+// singleEmail();
+// bySnsTopicList();
+bySnsWithEmailRecipient();
 // bySqsQueue();

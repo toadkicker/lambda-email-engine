@@ -1,0 +1,10 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "Sns": {
+        "Message": "{\"recipient\":\"todd.baur@intensity.com\",\"subject\":\"Sup Buttercup\",\"templateParams\":{\"subject\":\"Password Change Request\",\"fromName\":\"Intensity Forecasts Password Support\",\"message\":\"New User!\",\"templateKey\":\"Templates/TestTemplate.html\",\"fromAddress\":\"noreply@support.intensity.com\"}}"
+      }
+    }
+  ]
+}
