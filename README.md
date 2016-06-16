@@ -19,16 +19,6 @@ This lambda utilizes this policy to work: https://console.aws.amazon.com/iam/hom
         {
             "Effect": "Allow",
             "Action": [
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DetachNetworkInterface",
-                "ec2:DeleteNetworkInterface"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
