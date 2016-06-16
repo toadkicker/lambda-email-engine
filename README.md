@@ -12,6 +12,68 @@ It can also process a single email recipient and send an email.
 
 This lambda utilizes this policy to work: https://console.aws.amazon.com/iam/home?region=us-east-1#policies/arn:aws:iam::412642013128:policy/aws-lambda-send-ses-email
 
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DetachNetworkInterface",
+                "ec2:DeleteNetworkInterface"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:PutMetricData"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ses:SendEmail"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sns:Publish",
+                "sns:ListSubscriptionsByTopic"
+            ],
+            "Resource": [
+                "arn:aws:sns:us-west-2:412642013128:build_email_template",
+                "arn:aws:sns:us-east-1:412642013128:build-email-template",
+                "arn:aws:sns:us-east-1:412642013128:build-email-template-dev",
+                "arn:aws:sns:us-east-1:412642013128:marketing_notifications",
+                "arn:aws:sns:us-east-1:412642013128:support_notifications"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": "arn:aws:s3:::com.intensity.forecasts.emails/Templates/*"
+        }
+    ]
+}
+```
+
 ## Usage
 
 Take a look at the `_sample.json` files in the project for how this works with SNS, SQS, and SES. The basic SNS message envelope needs to be structured like so:
