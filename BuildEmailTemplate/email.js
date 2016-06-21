@@ -13,7 +13,7 @@ exports.send = function (event, context) {
     },
     Message: {
       Subject: {
-        Data: event.subject,
+        Data: event.templateParams.subject,
         Charset: 'UTF-8'
       }
     },
