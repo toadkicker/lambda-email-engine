@@ -52,7 +52,7 @@ function bySqsQueue () {
   app.handler(event, context);
 }
 
-// singleEmail();
+singleEmail();
 // bySnsTopicList();
 bySnsWithEmailRecipient();
-// bySqsQueue();
+// bySqsQueue();//

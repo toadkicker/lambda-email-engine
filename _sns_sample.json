@@ -3,7 +3,7 @@
     {
       "EventSource": "aws:sns",
       "Sns": {
-        "Message": "{\"recipient\":\"arn:aws:sns:us-east-1:412642013128:support_notifications\",\"subject\":\"Sup Buttercup\",\"templateParams\":{\"subject\":\"Password Change Request\",\"fromName\":\"Intensity Forecasts Password Support\",\"message\":\"New User!\",\"templateKey\":\"Templates/TestTemplate.html\",\"fromAddress\":\"noreply@support.intensity.com\"}}"
+        "Message": "{\"recipient\":\"arn:aws:sns:us-east-1:412642013128:support_notifications_dev\",\"subject\":\"Sup Buttercup\",\"templateParams\":{\"subject\":\"Password Change Request\",\"fromName\":\"Intensity Forecasts Password Support\",\"message\":\"New User!\",\"templateKey\":\"Templates/TestTemplate.html\",\"fromAddress\":\"noreply@support.intensity.com\"}}"
       }
     }
   ]

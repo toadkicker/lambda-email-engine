@@ -3,7 +3,7 @@
     {
       "EventSource": "aws:sns",
       "Sns": {
-        "Message": "{\"recipient\":\"todd.baur@intensity.com\",\"subject\":\"Sup Buttercup\",\"templateParams\":{\"email\": \"test@localhost.com\",\"firstName\": \"Test\",\"lastName\": \"Tester\",\"companyName\":\"Test Inc.\",\"jobTitle\":\"Director\",\"mobilePhone\":\"8587521459\",\"loginMfa\":\"true\",\"createdAt\":\"11/22/2016 11:50pm\", \"templateKey\":\"Templates/newUserRegNotification.html\", \"fromAddress\" :\"noreply@support.intensity.com\"}}"
+        "Message": "{\"recipient\":\"todd.baur@intensity.com\",\"subject\":\"Test Email\",\"templateParams\":{\"subject\":\"Whats happening\", \"email\": \"test@localhost.com\",\"firstName\": \"Test\",\"lastName\": \"Tester\",\"companyName\":\"Test Inc.\",\"jobTitle\":\"Director\",\"mobilePhone\":\"8587521459\",\"loginMfa\":\"true\",\"createdAt\":\"11/22/2016 11:50pm\", \"templateKey\":\"Templates/newUserRegNotification.html\", \"fromAddress\" :\"noreply@support.intensity.com\"}}"
       }
     }
   ]
