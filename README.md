@@ -1,9 +1,19 @@
-# Build Email Template
+# AWS Automated Email Engine
 
-## Purpose
+## What is it?
 
-Subscribes to an SNS topic for the creation of making a text or html formatted email template. 
-Can be used with SQS to enable batch mode processing.
+Do you need:
+- A simple way to send emails from your frontend app
+- Text and HTML email templates that live in S3
+- A decoupled approach to handling email sending in your backend using a queue
+- A way to find and retry failed emails
+
+## What does it do?
+
+This package deploys everything you need to trigger an email being sent via an API Gateway request. The payload could include your template variables, such as name, email, message, etc.
+
+When the API gets a request, it calls a lambda that fetches the required template from S3 and compiles it to text or html. It then sends the compiled version along in a notification to SNS. A queue in SQS holds the message, where another lambda waits to handle sending to SES.
+
 
 ## Installation
 

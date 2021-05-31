@@ -1,15 +1,14 @@
 "use strict";
+const templateSettings = process.env.event;
 
-var config = {
-  "templateBucket" : "com.intensity.forecasts.emails",
+export const config = {
+  "templateBucket" : `${templateSettings.bucket}`,
   "templateParams": {
     "templateKey" : "Templates/template.html",
-    "targetAddress" : "todd.baur@intensity.com",
-    "replyToAddress": "noreply@support.intensity.com",
-    "fromName": "Forecasts by Intensity",
-    "fromAddress": "noreply@support.intensity.com",
-    "subject" : "Intensity",
+    "targetAddress" : `${templateSettings.targetAddress}`,
+    "replyToAddress": `${templateSettings.replyToAddress}`,
+    "fromName": `${templateSettings.fromName}`,
+    "fromAddress": `${templateSettings.fromAddress}`,
+    "subject" : `${templateSettings.subject}`,
   }
 }
-
-module.exports = config
